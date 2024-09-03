@@ -1,3 +1,4 @@
+<?php
 function leaderboard_shortcode() {
     ob_start(); 
 
@@ -140,3 +141,4 @@ function register_shortcodes(){
     add_shortcode('player_stats', 'leaderboard_shortcode');
 }
 add_action('init', 'register_shortcodes');
+?>

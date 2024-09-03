@@ -1,4 +1,4 @@
-#Terms of Service
+# Terms of Service
 
 1. Acceptance of Terms By using this Discord bot ("nextpeek-bot"), you agree to these Terms of Service. If you do not agree to these terms, you should not use the Bot.
 

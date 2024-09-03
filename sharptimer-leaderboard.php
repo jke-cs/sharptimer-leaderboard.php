@@ -42,23 +42,21 @@ function leaderboard_shortcode() {
             }
         </style>';
 
-    // Database configuration
+    // DB configuration
     $host = '127.0.0.1';
     $username = 'CHANGE_ME';
     $password = 'CHANGE_ME';
     $dbname = 'CHANGE_ME';
     $port = 3306;
 
-
     $conn = new mysqli($host, $username, $password, $dbname, $port);
-
 
     if ($conn->connect_error) {
         return "No connection: " . $conn->connect_error;
     }
 
     $sql = "
-        SELECT pr.PlayerName, ps.GlobalPoints
+        SELECT pr.PlayerName, pr.SteamID, ps.GlobalPoints
         FROM PlayerRecords pr
         LEFT JOIN PlayerStats ps ON pr.PlayerName = ps.PlayerName
         GROUP BY pr.PlayerName
@@ -78,12 +76,11 @@ function leaderboard_shortcode() {
         
         $position = 1;
 
-
         while ($row = $result->fetch_assoc()) {
             $playerName = htmlspecialchars($row['PlayerName']);
             $playerPoints = intval($row['GlobalPoints']);
+            $steamID = htmlspecialchars($row['SteamID']);
             
-
             if ($playerPoints > 0) {
                 if ($playerPoints < 5000) {
                     $imageUrl = "https://cs2surf.pro/surf/images/ratings/rating.common.png";
@@ -100,28 +97,27 @@ function leaderboard_shortcode() {
                 } elseif ($playerPoints < 20000) {
                     $imageUrl = "https://cs2surf.pro/surf/images/ratings/rating.mythical.png";
                     $textColor = "#8846ff"; 
-                    $fontSize = "18px"; 
-                }
+                    $fontSize = "18px";
                 } elseif ($playerPoints < 25000) {
                     $imageUrl = "https://cs2surf.pro/surf/images/ratings/rating.legendary.png";
                     $textColor = "#d22ce6"; 
-                    $fontSize = "19px"; 
+                    $fontSize = "18px"; 
                 } elseif ($playerPoints < 30000) {
                     $imageUrl = "https://cs2surf.pro/surf/images/ratings/rating.ancient.png";
                     $textColor = "#eb4b4b"; 
-                    $fontSize = "19px";  
+                    $fontSize = "18px";
+                } else {
+                    $imageUrl = "https://cs2surf.pro/surf/images/ratings/rating.unusual.png";
+                    $textColor = "#fed701";
+                    $fontSize = "18px"; 
                 }
-            } else {
-                $imageUrl = "https://cs2surf.pro/surf/images/ratings/rating.unusual.png";
-                $textColor = "#fed701";
-                $fontSize = "18px"; 
             }
 
-            $playerLink = home_url('/player-details/?name=' . urlencode($playerName));
+            $playerLink = 'https://steamcommunity.com/profiles/' . urlencode($steamID);
             
             echo '<tr>
                     <td>' . $position . '</td>
-                    <td><a href="' . esc_url($playerLink) . '">' . $playerName . '</a></td>
+                    <td><a href="' . esc_url($playerLink) . '" target="_blank">' . $playerName . '</a></td>
                     <td class="global-points-cell" style="background-image: url(' . $imageUrl . '); color: ' . $textColor . '; font-size: ' . $fontSize . ';">
                         ' . $playerPoints . '
                     </td>
@@ -134,7 +130,6 @@ function leaderboard_shortcode() {
     } else {
         echo "No Data.";
     }
-
 
     $conn->close();
 
